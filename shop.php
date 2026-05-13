@@ -1,4 +1,5 @@
 <?php 
+if (session_status() === PHP_SESSION_NONE) session_start();
 require_once 'config/config.php'; 
 $search = $_GET['search'] ?? '';
 $category = $_GET['category'] ?? '';
@@ -10,47 +11,110 @@ $products = getProducts($pdo, null, $category, $search, $sort);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop African Fashion - <?php echo SITE_NAME; ?></title>
+    <title>Shop - <?php echo SITE_NAME; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f5f5; }
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: 0.2s;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            height: 100%;
+        }
+        .product-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .product-image {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            padding: 15px;
+        }
+        .product-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .product-info { padding: 12px; border-top: 1px solid #eee; }
+        .product-title { font-size: 14px; font-weight: 500; height: 40px; overflow: hidden; }
+        .product-title a { color: #007185; text-decoration: none; }
+        .product-price { font-size: 18px; font-weight: 700; color: #B12704; }
+        .filter-sidebar {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            position: sticky;
+            top: 20px;
+        }
+        .filter-sidebar h5 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        @media (max-width: 768px) {
+            .filter-sidebar { position: relative; top: 0; margin-bottom: 20px; }
+        }
+    </style>
 </head>
 <body>
+
 <?php include 'includes/header.php'; ?>
-<div class="container my-5">
+
+<div class="container my-4">
     <div class="row">
+        <!-- Filter Sidebar -->
         <div class="col-md-3">
-            <div class="card">
-                <div class="card-header bg-primary text-white"><h5 class="mb-0"><i class="fas fa-filter"></i> Filter</h5></div>
-                <div class="card-body">
-                    <label class="form-label fw-bold">Sort By</label>
-                    <select id="sort-by" class="form-control">
-                        <option value="newest" <?php echo $sort=='newest'?'selected':''; ?>>Newest First</option>
-                        <option value="price_low" <?php echo $sort=='price_low'?'selected':''; ?>>Price: Low to High</option>
-                        <option value="price_high" <?php echo $sort=='price_high'?'selected':''; ?>>Price: High to Low</option>
-                        <option value="popular" <?php echo $sort=='popular'?'selected':''; ?>>Most Popular</option>
-                    </select>
+            <div class="filter-sidebar">
+                <h5><i class="fas fa-filter"></i> Filter & Sort</h5>
+                <label class="form-label fw-bold">Sort By</label>
+                <select id="sort-by" class="form-control mb-3">
+                    <option value="newest" <?php echo $sort=='newest'?'selected':''; ?>>Newest First</option>
+                    <option value="price_low" <?php echo $sort=='price_low'?'selected':''; ?>>Price: Low to High</option>
+                    <option value="price_high" <?php echo $sort=='price_high'?'selected':''; ?>>Price: High to Low</option>
+                    <option value="popular" <?php echo $sort=='popular'?'selected':''; ?>>Most Popular</option>
+                </select>
+                <hr>
+                <h5><i class="fas fa-tag"></i> Categories</h5>
+                <div class="list-group">
+                    <a href="shop.php" class="list-group-item list-group-item-action">All Products</a>
+                    <?php $cats = getCategories($pdo); ?>
+                    <?php foreach($cats as $cat): ?>
+                    <a href="shop.php?category=<?php echo $cat['slug']; ?>" class="list-group-item list-group-item-action"><?php echo $cat['name']; ?></a>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
+        
+        <!-- Products Grid -->
         <div class="col-md-9">
-            <h1 class="mb-4"><?php echo $search ? "Search Results: $search" : ($category ? ucfirst(str_replace('-',' ',$category)) : 'All African Fashion'); ?></h1>
+            <h1 class="mb-4"><?php echo $search ? "Search: $search" : ($category ? ucfirst(str_replace('-',' ',$category)) : 'All Products'); ?></h1>
             <div class="row">
                 <?php if(empty($products)): ?>
                 <div class="col-12"><div class="alert alert-info text-center py-5">No products found. <a href="shop.php">View all products</a></div></div>
                 <?php else: ?>
-                <?php foreach($products as $p): $price = convertPrice($p['price_usd'], $currentCurrency); $img = $p['images_array'][0]; ?>
+                <?php foreach($products as $p): 
+                    $price = convertPrice($p['price_usd'], $currentCurrency); 
+                    $img = isset($p['images_array'][0]) ? $p['images_array'][0] : 'placeholder.jpg';
+                ?>
                 <div class="col-md-4 col-6 mb-4">
                     <div class="product-card">
                         <div class="product-image">
-                            <img src="assets/uploads/<?php echo $img; ?>" onerror="this.src='https://via.placeholder.com/250'">
-                            <div class="product-actions">
-                                <button class="btn btn-primary btn-sm quick-add-cart" data-id="<?php echo $p['id']; ?>"><i class="fas fa-cart-plus"></i> Add</button>
-                            </div>
+                            <img src="assets/uploads/<?php echo $img; ?>" onerror="this.src='https://via.placeholder.com/200'">
                         </div>
                         <div class="product-info">
                             <div class="product-title"><a href="product.php?slug=<?php echo $p['slug']; ?>"><?php echo $p['name']; ?></a></div>
                             <div class="product-price"><?php echo formatPrice($price); ?></div>
+                            <button class="btn btn-primary btn-sm w-100 mt-2 add-to-cart" data-id="<?php echo $p['id']; ?>">
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -60,6 +124,39 @@ $products = getProducts($pdo, null, $category, $search, $sort);
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.getElementById('sort-by')?.addEventListener('change', function() {
+    window.location.href = 'shop.php?sort=' + this.value;
+});
+
+$('.add-to-cart').click(function() {
+    var $btn = $(this);
+    var productId = $btn.data('id');
+    $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
+    $.ajax({
+        url: 'includes/cart.php',
+        method: 'POST',
+        data: { action: 'add', product_id: productId, quantity: 1 },
+        success: function(res) {
+            var data = JSON.parse(res);
+            if(data.success) {
+                $('#cart-count').text(data.cart_count);
+                alert('Added to cart!');
+            } else {
+                alert(data.message || 'Error');
+            }
+            $btn.html('<i class="fas fa-cart-plus"></i> Add to Cart').prop('disabled', false);
+        },
+        error: function() {
+            alert('Error');
+            $btn.html('<i class="fas fa-cart-plus"></i> Add to Cart').prop('disabled', false);
+        }
+    });
+});
+</script>
+
 <?php include 'includes/footer.php'; ?>
 </body>
 </html>

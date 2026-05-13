@@ -134,7 +134,6 @@ function getCartItems($pdo, $sessionId) {
 }
 
 function addToCart($pdo, $productId, $quantity, $sessionId, $size = null, $color = null) {
-    // First check if product exists in cart with same size/color
     $stmt = $pdo->prepare("SELECT * FROM cart_sessions WHERE session_id = ? AND product_id = ? AND (size = ? OR (size IS NULL AND ? IS NULL))");
     $stmt->execute([$sessionId, $productId, $size, $size]);
     $existing = $stmt->fetch();

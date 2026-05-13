@@ -12,19 +12,12 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f5f5f5; }
         
-        /* Amazon/IKEA Color Scheme */
         :root {
             --amazon-orange: #FF9900;
             --amazon-dark: #232F3E;
             --amazon-light: #37475A;
-            --ikea-blue: #0058AB;
-            --ikea-yellow: #FFDA1A;
-            --gray-bg: #EAEDED;
-            --text-dark: #111;
-            --text-gray: #565959;
         }
         
-        /* Top Bar - Amazon Style */
         .top-bar {
             background: var(--amazon-dark);
             color: white;
@@ -32,9 +25,7 @@
             font-size: 13px;
         }
         .top-bar a { color: white; text-decoration: none; }
-        .top-bar a:hover { text-decoration: underline; }
         
-        /* Main Header - Amazon Style */
         .main-header {
             background: var(--amazon-dark);
             padding: 12px 0;
@@ -47,7 +38,6 @@
         }
         .logo span { color: var(--amazon-orange); }
         
-        /* Search Bar - Amazon Style */
         .search-form .input-group {
             box-shadow: none;
         }
@@ -63,11 +53,7 @@
             color: #111;
             font-weight: 600;
         }
-        .search-form button:hover {
-            background: #ff8c00;
-        }
         
-        /* Navigation - Amazon Style */
         .nav-bar {
             background: var(--amazon-light);
             padding: 8px 0;
@@ -77,28 +63,8 @@
             font-size: 14px;
             padding: 5px 12px !important;
         }
-        .nav-bar .nav-link:hover {
-            border: 1px solid white;
-            padding: 4px 11px !important;
-        }
         
-        /* Hero Banner - IKEA Style */
-        .hero-banner {
-            background: linear-gradient(135deg, var(--ikea-blue) 0%, #003d7a 100%);
-            color: white;
-            padding: 50px 0;
-            margin-bottom: 30px;
-        }
-        .hero-banner h1 { font-size: 42px; font-weight: 700; margin-bottom: 20px; }
-        .hero-banner .btn-primary {
-            background: var(--amazon-orange);
-            border: none;
-            padding: 12px 30px;
-            font-weight: 600;
-            color: #111;
-        }
-        
-        /* Product Card - Amazon Style */
+        /* Fixed Product Card */
         .product-card {
             background: white;
             border-radius: 8px;
@@ -106,20 +72,19 @@
             transition: 0.2s;
             margin-bottom: 20px;
             border: 1px solid #ddd;
+            height: 100%;
         }
         .product-card:hover {
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
         }
         .product-image {
-            height: 220px;
+            height: 200px;
             overflow: hidden;
-            position: relative;
-            background: #f8f9fa;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            background: #f8f9fa;
+            padding: 15px;
         }
         .product-image img {
             max-width: 100%;
@@ -136,9 +101,10 @@
             font-size: 12px;
             font-weight: 600;
             border-radius: 4px;
+            z-index: 1;
         }
         .product-info {
-            padding: 15px;
+            padding: 12px;
             border-top: 1px solid #eee;
         }
         .product-title {
@@ -152,10 +118,6 @@
             color: #007185;
             text-decoration: none;
         }
-        .product-title a:hover {
-            color: #C45500;
-            text-decoration: underline;
-        }
         .product-price {
             font-size: 18px;
             font-weight: 700;
@@ -168,38 +130,6 @@
             margin-left: 8px;
             font-weight: 400;
         }
-        .product-rating {
-            color: #FFA41C;
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-        .product-rating span {
-            color: #007185;
-            margin-left: 5px;
-        }
-        
-        /* Section Title - Amazon Style */
-        .section-title {
-            margin-bottom: 20px;
-            position: relative;
-        }
-        .section-title h2 {
-            font-size: 22px;
-            font-weight: 700;
-            color: #111;
-            margin: 0;
-        }
-        .section-title a {
-            font-size: 14px;
-            color: #007185;
-            text-decoration: none;
-        }
-        .section-title a:hover {
-            color: #C45500;
-            text-decoration: underline;
-        }
-        
-        /* Cart Badge */
         .cart-count-badge {
             position: absolute;
             top: -8px;
@@ -213,29 +143,22 @@
             text-align: center;
         }
         
-        /* Buttons */
-        .btn-primary {
-            background: var(--amazon-orange);
-            border-color: var(--amazon-orange);
-            color: #111;
-            font-weight: 600;
+        /* Fixed Filter Bar - Moved to sidebar */
+        .filter-sidebar {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            position: sticky;
+            top: 20px;
         }
-        .btn-primary:hover {
-            background: #ff8c00;
-            border-color: #ff8c00;
-            color: #111;
-        }
-        .btn-outline-primary {
-            border-color: var(--amazon-orange);
-            color: var(--amazon-orange);
-        }
-        .btn-outline-primary:hover {
-            background: var(--amazon-orange);
-            border-color: var(--amazon-orange);
-            color: #111;
+        .filter-sidebar h5 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
         }
         
-        /* Footer - Amazon Style */
         .footer {
             background: var(--amazon-dark);
             color: #ddd;
@@ -253,46 +176,15 @@
             text-decoration: none;
             font-size: 13px;
         }
-        .footer a:hover {
-            color: white;
-            text-decoration: underline;
-        }
         
-        /* Cart Page */
-        .cart-table {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .cart-table th {
-            background: var(--gray-bg);
-            border: none;
-        }
-        
-        /* Checkout */
-        .checkout-form {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-        }
-        .order-summary {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            position: sticky;
-            top: 20px;
-        }
-        
-        /* Responsive */
         @media (max-width: 768px) {
-            .hero-banner h1 { font-size: 28px; }
-            .product-image { height: 160px; }
+            .product-image { height: 150px; }
+            .filter-sidebar { position: relative; top: 0; margin-bottom: 20px; }
         }
     </style>
 </head>
 <body>
 
-<!-- Top Bar - Amazon Style -->
 <div class="top-bar">
     <div class="container">
         <div class="row">
@@ -313,15 +205,15 @@
                     </ul>
                 </div>
                 <div class="dropdown d-inline-block ms-3">
-                    <button class="btn btn-link dropdown-toggle text-white text-decoration-none" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> Hello, Sign in
+                    <button class="btn btn-link dropdown-toggle text-white text-decoration-none" data-bs-toggle="dropdown" id="accountDropdown">
+                        <i class="fas fa-user"></i> Account
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#">Your Account</a></li>
-                        <li><a class="dropdown-item" href="wishlist.php">Your Wishlist</a></li>
-                        <li><a class="dropdown-item" href="#">Your Orders</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="fas fa-sign-in-alt"></i> Sign In</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#registerModal"><i class="fas fa-user-plus"></i> Register</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Sign out</a></li>
+                        <li><a class="dropdown-item" href="wishlist.php"><i class="fas fa-heart"></i> Your Wishlist</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-box"></i> Your Orders</a></li>
                     </ul>
                 </div>
             </div>
@@ -329,7 +221,6 @@
     </div>
 </div>
 
-<!-- Main Header - Amazon Style -->
 <header class="main-header">
     <div class="container">
         <div class="row align-items-center">
@@ -341,8 +232,8 @@
             <div class="col-md-6">
                 <form class="search-form" action="shop.php" method="GET">
                     <div class="input-group">
-                        <input type="text" name="search" class="form-control" placeholder="Search for dashiki, kente, ankara...">
-                        <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                        <input type="text" name="search" class="form-control" placeholder="Search products...">
+                        <button class="btn" type="submit"><i class="fas fa-search"></i> Search</button>
                     </div>
                 </form>
             </div>
@@ -360,7 +251,6 @@
     </div>
 </header>
 
-<!-- Navigation - Amazon Style -->
 <nav class="nav-bar">
     <div class="container">
         <div class="d-flex flex-wrap">
@@ -373,3 +263,109 @@
         </div>
     </div>
 </nav>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-sign-in-alt"></i> Sign In</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="loginEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                </form>
+                <div class="text-center mt-3">
+                    <small>New to AfriMart? <a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal">Create an account</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-user-plus"></i> Create Account</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="regName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="regEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="regPhone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="regPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Account Modal JavaScript
+document.getElementById('loginForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Demo: Login functionality would connect to database');
+    bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+});
+
+document.getElementById('registerForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Demo: Registration functionality would connect to database');
+    bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
+});
+</script>
+<script>
+$(document).ready(function() {
+    $('.add-to-cart').click(function(e) {
+        e.preventDefault();
+        var $btn = $(this);
+        var productId = $btn.data('id');
+        
+        $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
+        $.ajax({
+            url: 'includes/cart.php',
+            method: 'POST',
+            data: { action: 'add', product_id: productId, quantity: 1 },
+            success: function(res) {
+                var data = JSON.parse(res);
+                if(data.success) {
+                    $('#cart-count').text(data.cart_count);
+                    alert('Added to cart!');
+                } else {
+                    alert(data.message || 'Error adding to cart');
+                }
+                $btn.html('<i class="fas fa-cart-plus"></i> Add to Cart').prop('disabled', false);
+            },
+            error: function() {
+                alert('Error adding to cart');
+                $btn.html('<i class="fas fa-cart-plus"></i> Add to Cart').prop('disabled', false);
+            }
+        });
+    });
+});
+</script>

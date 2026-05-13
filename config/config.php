@@ -1,5 +1,4 @@
 <?php
-// Fix session start - check if session already active
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
