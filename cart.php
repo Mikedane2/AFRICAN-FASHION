@@ -1,0 +1,15 @@
+<?php 
+require_once 'config/config.php'; 
+$sessionId = getSessionId();
+$items = getCartItems($pdo, $sessionId);
+$total = getCartTotal($pdo, $sessionId, $currentCurrency);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head><title>Shopping Cart - <?php echo SITE_NAME; ?></title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"><link rel="stylesheet" href="assets/css/style.css"></head>
+<body>
+<?php include 'includes/header.php'; ?>
+<div class="container my-5"><h1>Shopping Cart</h1><?php if(empty($items)): ?><div class="alert alert-info text-center py-5"><i class="fas fa-shopping-cart fa-3x mb-3"></i><h4>Your cart is empty</h4><a href="shop.php" class="btn btn-primary mt-3">Continue Shopping</a></div><?php else: ?><div class="row"><div class="col-md-8"><div class="table-responsive"><table class="table table-bordered"><thead class="table-dark"><tr><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th></th></tr></thead><tbody><?php foreach($items as $item): $price = convertPrice($item['price_usd'], $currentCurrency); $subtotal = $price * $item['quantity']; ?><tr><td><img src="assets/uploads/<?php echo $item['first_image']; ?>" width="60" class="me-2" onerror="this.src='https://via.placeholder.com/60'"> <?php echo htmlspecialchars($item['name']); ?><?php if($item['size']): ?><br><small>Size: <?php echo $item['size']; ?></small><?php endif; ?><?php if($item['color']): ?><br><small>Color: <?php echo $item['color']; ?></small><?php endif; ?></td><td><?php echo formatPrice($price); ?></td><td><input type="number" class="form-control cart-qty" data-id="<?php echo $item['id']; ?>" value="<?php echo $item['quantity']; ?>" min="1" style="width:80px"></td><td><?php echo formatPrice($subtotal); ?></td><td><button class="btn btn-danger btn-sm remove-item" data-id="<?php echo $item['id']; ?>"><i class="fas fa-trash"></i></button></td></tr><?php endforeach; ?></tbody></table></div></div><div class="col-md-4"><div class="card"><div class="card-body"><h4>Order Summary</h4><hr><div class="d-flex justify-content-between mb-2"><span>Subtotal:</span><strong><?php echo formatPrice($total); ?></strong></div><div class="d-flex justify-content-between mb-2"><span>Shipping (Africa-wide):</span><strong><?php echo formatPrice(convertPrice(10, $currentCurrency)); ?></strong></div><hr><div class="d-flex justify-content-between mb-3"><span>Total:</span><strong class="h5"><?php echo formatPrice($total + convertPrice(10, $currentCurrency)); ?></strong></div><a href="checkout.php" class="btn btn-primary w-100">Proceed to Checkout</a><a href="shop.php" class="btn btn-outline-secondary w-100 mt-2">Continue Shopping</a></div></div></div></div><?php endif; ?></div>
+<?php include 'includes/footer.php'; ?>
+</body>
+</html>

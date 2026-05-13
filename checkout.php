@@ -1,0 +1,16 @@
+<?php 
+require_once 'config/config.php'; 
+$sessionId = getSessionId();
+$items = getCartItems($pdo, $sessionId);
+if(empty($items)) header('Location: cart.php');
+$total = getCartTotal($pdo, $sessionId, $currentCurrency);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head><title>Checkout - <?php echo SITE_NAME; ?></title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"><link rel="stylesheet" href="assets/css/style.css"></head>
+<body>
+<?php include 'includes/header.php'; ?>
+<div class="container my-5"><div class="row"><div class="col-md-7"><form id="checkout-form"><div class="mb-3"><label class="form-label">Full Name *</label><input type="text" name="name" class="form-control" required></div><div class="mb-3"><label class="form-label">Email Address *</label><input type="email" name="email" class="form-control" required></div><div class="mb-3"><label class="form-label">Phone Number *</label><input type="tel" name="phone" class="form-control" required></div><div class="mb-3"><label class="form-label">Shipping Address *</label><textarea name="address" class="form-control" rows="3" required></textarea></div><div class="row"><div class="col-md-6"><div class="mb-3"><label class="form-label">City</label><input type="text" name="city" class="form-control"></div></div><div class="col-md-6"><div class="mb-3"><label class="form-label">Country</label><select name="country" class="form-control"><option value="">Select Country</option><option value="Kenya">Kenya</option><option value="Nigeria">Nigeria</option><option value="South Africa">South Africa</option><option value="Ghana">Ghana</option><option value="Egypt">Egypt</option><option value="Morocco">Morocco</option></select></div></div></div><div class="mb-3"><label class="form-label">Payment Method *</label><select name="payment_method" class="form-control" required><option value="">Select Payment Method</option><option value="paypal">PayPal</option><option value="mpesa">M-Pesa (Kenya)</option><option value="card">Credit / Debit Card</option><option value="airtel">Airtel Money</option></select></div><button type="submit" class="btn btn-primary btn-lg w-100">Place Order</button></form></div><div class="col-md-5"><div class="card"><div class="card-body"><h4>Order Summary</h4><hr><?php foreach($items as $item): ?><div class="d-flex justify-content-between mb-2"><span><?php echo $item['name']; ?> x <?php echo $item['quantity']; ?></span><span><?php echo formatPrice(convertPrice($item['price_usd'], $currentCurrency) * $item['quantity']); ?></span></div><?php endforeach; ?><hr><div class="d-flex justify-content-between mb-2"><strong>Subtotal:</strong><strong><?php echo formatPrice($total); ?></strong></div><div class="d-flex justify-content-between mb-2"><span>Shipping:</span><span><?php echo formatPrice(convertPrice(10, $currentCurrency)); ?></span></div><hr><div class="d-flex justify-content-between"><strong>Total:</strong><strong class="h4 text-primary"><?php echo formatPrice($total + convertPrice(10, $currentCurrency)); ?></strong></div></div></div></div></div></div>
+<?php include 'includes/footer.php'; ?>
+</body>
+</html>
