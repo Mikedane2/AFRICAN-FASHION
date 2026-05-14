@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 function getCountryFromIP() {
     $ip = $_SERVER['REMOTE_ADDR'];
     if($ip == '127.0.0.1' || $ip == '::1') {
-        return 'KE'; // Default to Kenya for local testing
+        return 'KE';
     }
     return 'KE';
 }

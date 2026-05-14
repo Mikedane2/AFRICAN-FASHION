@@ -38,9 +38,7 @@ $products = getSaleProducts($pdo);
     
     <div class="row">
         <?php if(empty($products)): ?>
-        <div class="col-12">
-            <div class="alert alert-info text-center py-5">No sale products at the moment. Check back soon!</div>
-        </div>
+        <div class="col-12"><div class="alert alert-info text-center py-5">No sale products at the moment. Check back soon!</div></div>
         <?php else: ?>
         <?php foreach($products as $p): $price = convertPrice($p['price_usd'], $currentCurrency); $compare = convertPrice($p['compare_price_usd'], $currentCurrency); $discount = round((($p['compare_price_usd'] - $p['price_usd']) / $p['compare_price_usd']) * 100); ?>
         <div class="col-md-3 col-6 mb-4">
@@ -62,30 +60,6 @@ $products = getSaleProducts($pdo);
         <?php endif; ?>
     </div>
 </div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function() {
-    $('.add-to-cart').click(function() {
-        var $btn = $(this);
-        var productId = $btn.data('id');
-        $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
-        $.ajax({
-            url: 'includes/cart.php',
-            method: 'POST',
-            data: { action: 'add', product_id: productId, quantity: 1 },
-            success: function(res) {
-                var data = JSON.parse(res);
-                if(data.success) {
-                    $('#cart-count').text(data.cart_count);
-                    alert('Added to cart!');
-                }
-                $btn.html('<i class="fas fa-cart-plus"></i> Add to Cart').prop('disabled', false);
-            }
-        });
-    });
-});
-</script>
 
 <?php include 'includes/footer.php'; ?>
 </body>

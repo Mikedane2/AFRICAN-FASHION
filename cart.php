@@ -1,15 +1,133 @@
 <?php 
+if (session_status() === PHP_SESSION_NONE) session_start();
 require_once 'config/config.php'; 
 $sessionId = getSessionId();
 $items = getCartItems($pdo, $sessionId);
 $total = getCartTotal($pdo, $sessionId, $currentCurrency);
+$shipping = convertPrice(10, $currentCurrency);
+$grandTotal = $total + $shipping;
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head><title>Shopping Cart - <?php echo SITE_NAME; ?></title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"><link rel="stylesheet" href="assets/css/style.css"></head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - <?php echo SITE_NAME; ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #f5f5f5; font-family: 'Inter', sans-serif; }
+        .cart-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .cart-table { background: white; border-radius: 12px; overflow: hidden; }
+        .cart-table th { background: #232F3E; color: white; border: none; padding: 15px; }
+        .cart-item-image { width: 80px; height: 80px; object-fit: contain; background: #f8f9fa; border-radius: 8px; padding: 5px; }
+        .cart-qty { width: 70px; text-align: center; }
+        .order-summary { background: white; border-radius: 12px; padding: 20px; position: sticky; top: 20px; }
+        .btn-checkout { background: #FF9900; color: #111; font-weight: 600; padding: 12px; width: 100%; border: none; border-radius: 8px; }
+        .btn-checkout:hover { background: #ff8c00; }
+        @media (max-width: 768px) { .order-summary { position: relative; top: 0; margin-top: 20px; } }
+    </style>
+</head>
 <body>
+
 <?php include 'includes/header.php'; ?>
-<div class="container my-5"><h1>Shopping Cart</h1><?php if(empty($items)): ?><div class="alert alert-info text-center py-5"><i class="fas fa-shopping-cart fa-3x mb-3"></i><h4>Your cart is empty</h4><a href="shop.php" class="btn btn-primary mt-3">Continue Shopping</a></div><?php else: ?><div class="row"><div class="col-md-8"><div class="table-responsive"><table class="table table-bordered"><thead class="table-dark"><tr><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th></th></tr></thead><tbody><?php foreach($items as $item): $price = convertPrice($item['price_usd'], $currentCurrency); $subtotal = $price * $item['quantity']; ?><tr><td><img src="assets/uploads/<?php echo $item['first_image']; ?>" width="60" class="me-2" onerror="this.src='https://via.placeholder.com/60'"> <?php echo htmlspecialchars($item['name']); ?><?php if($item['size']): ?><br><small>Size: <?php echo $item['size']; ?></small><?php endif; ?><?php if($item['color']): ?><br><small>Color: <?php echo $item['color']; ?></small><?php endif; ?></td><td><?php echo formatPrice($price); ?></td><td><input type="number" class="form-control cart-qty" data-id="<?php echo $item['id']; ?>" value="<?php echo $item['quantity']; ?>" min="1" style="width:80px"></td><td><?php echo formatPrice($subtotal); ?></td><td><button class="btn btn-danger btn-sm remove-item" data-id="<?php echo $item['id']; ?>"><i class="fas fa-trash"></i></button></td></tr><?php endforeach; ?></tbody></table></div></div><div class="col-md-4"><div class="card"><div class="card-body"><h4>Order Summary</h4><hr><div class="d-flex justify-content-between mb-2"><span>Subtotal:</span><strong><?php echo formatPrice($total); ?></strong></div><div class="d-flex justify-content-between mb-2"><span>Shipping (Africa-wide):</span><strong><?php echo formatPrice(convertPrice(10, $currentCurrency)); ?></strong></div><hr><div class="d-flex justify-content-between mb-3"><span>Total:</span><strong class="h5"><?php echo formatPrice($total + convertPrice(10, $currentCurrency)); ?></strong></div><a href="checkout.php" class="btn btn-primary w-100">Proceed to Checkout</a><a href="shop.php" class="btn btn-outline-secondary w-100 mt-2">Continue Shopping</a></div></div></div></div><?php endif; ?></div>
+
+<div class="cart-container">
+    <h2 class="mb-4">Shopping Cart</h2>
+    
+    <?php if(empty($items)): ?>
+    <div class="text-center py-5" style="background: white; border-radius: 12px;">
+        <i class="fas fa-shopping-cart fa-4x mb-3" style="color: #ccc;"></i>
+        <h4>Your cart is empty</h4>
+        <p>Add items to your cart and they will appear here</p>
+        <a href="shop.php" class="btn btn-primary">Continue Shopping</a>
+    </div>
+    <?php else: ?>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="cart-table">
+                <table class="table table-bordered mb-0">
+                    <thead>
+                        <tr><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($items as $item): $price = convertPrice($item['price_usd'], $currentCurrency); $subtotal = $price * $item['quantity']; ?>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="assets/uploads/<?php echo $item['first_image']; ?>" class="cart-item-image me-3" onerror="this.src='https://via.placeholder.com/80'">
+                                    <div>
+                                        <strong><?php echo htmlspecialchars($item['name']); ?></strong>
+                                        <?php if($item['size']): ?><br><small class="text-muted">Size: <?php echo $item['size']; ?></small><?php endif; ?>
+                                        <?php if($item['color']): ?><br><small class="text-muted">Color: <?php echo $item['color']; ?></small><?php endif; ?>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><?php echo formatPrice($price); ?></td>
+                            <td><input type="number" class="form-control cart-qty" data-id="<?php echo $item['id']; ?>" value="<?php echo $item['quantity']; ?>" min="1" style="width: 70px;"></td>
+                            <td><?php echo formatPrice($subtotal); ?></td>
+                            <td><button class="btn btn-danger btn-sm remove-item" data-id="<?php echo $item['id']; ?>"><i class="fas fa-trash"></i></button></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3">
+                <a href="shop.php" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Continue Shopping</a>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="order-summary">
+                <h4 class="mb-3">Order Summary</h4>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal (<?php echo count($items); ?> items):</span>
+                    <strong><?php echo formatPrice($total); ?></strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Shipping:</span>
+                    <strong><?php echo formatPrice($shipping); ?></strong>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Total:</span>
+                    <strong class="h4 text-primary"><?php echo formatPrice($grandTotal); ?></strong>
+                </div>
+                <a href="checkout.php" class="btn-checkout btn">Proceed to Checkout</a>
+                <div class="mt-3 small text-muted text-center"><i class="fas fa-lock"></i> Secure checkout</div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+</div>
+
+<script>
+document.querySelectorAll('.cart-qty').forEach(input => {
+    input.addEventListener('change', function() {
+        const cartId = this.dataset.id;
+        const quantity = this.value;
+        fetch('includes/cart.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=update&cart_id=${cartId}&quantity=${quantity}`
+        }).then(() => location.reload());
+    });
+});
+
+document.querySelectorAll('.remove-item').forEach(btn => {
+    btn.addEventListener('click', function() {
+        if(confirm('Remove item from cart?')) {
+            const cartId = this.dataset.id;
+            fetch('includes/cart.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=remove&cart_id=${cartId}`
+            }).then(() => location.reload());
+        }
+    });
+});
+</script>
+
 <?php include 'includes/footer.php'; ?>
 </body>
 </html>

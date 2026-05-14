@@ -25,6 +25,7 @@
             font-size: 13px;
         }
         .top-bar a { color: white; text-decoration: none; }
+        .top-bar a:hover { text-decoration: underline; }
         
         .main-header {
             background: var(--amazon-dark);
@@ -53,6 +54,9 @@
             color: #111;
             font-weight: 600;
         }
+        .search-form button:hover {
+            background: #ff8c00;
+        }
         
         .nav-bar {
             background: var(--amazon-light);
@@ -62,74 +66,13 @@
             color: white !important;
             font-size: 14px;
             padding: 5px 12px !important;
-        }
-        
-        /* Fixed Product Card */
-        .product-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: 0.2s;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            height: 100%;
-        }
-        .product-card:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .product-image {
-            height: 200px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f8f9fa;
-            padding: 15px;
-        }
-        .product-image img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        .product-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #CC0C39;
-            color: white;
-            padding: 4px 8px;
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 4px;
-            z-index: 1;
-        }
-        .product-info {
-            padding: 12px;
-            border-top: 1px solid #eee;
-        }
-        .product-title {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            height: 40px;
-            overflow: hidden;
-        }
-        .product-title a {
-            color: #007185;
             text-decoration: none;
         }
-        .product-price {
-            font-size: 18px;
-            font-weight: 700;
-            color: #B12704;
+        .nav-bar .nav-link:hover {
+            border: 1px solid white;
+            padding: 4px 11px !important;
         }
-        .product-old-price {
-            font-size: 13px;
-            color: #565959;
-            text-decoration: line-through;
-            margin-left: 8px;
-            font-weight: 400;
-        }
+        
         .cart-count-badge {
             position: absolute;
             top: -8px;
@@ -143,43 +86,20 @@
             text-align: center;
         }
         
-        /* Fixed Filter Bar - Moved to sidebar */
-        .filter-sidebar {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            position: sticky;
-            top: 20px;
+        .btn-primary {
+            background: var(--amazon-orange);
+            border-color: var(--amazon-orange);
+            color: #111;
+            font-weight: 600;
         }
-        .filter-sidebar h5 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .footer {
-            background: var(--amazon-dark);
-            color: #ddd;
-            padding: 40px 0 20px;
-            margin-top: 50px;
-        }
-        .footer h5 {
-            color: white;
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-        .footer a {
-            color: #ddd;
-            text-decoration: none;
-            font-size: 13px;
+        .btn-primary:hover {
+            background: #ff8c00;
+            border-color: #ff8c00;
+            color: #111;
         }
         
         @media (max-width: 768px) {
-            .product-image { height: 150px; }
-            .filter-sidebar { position: relative; top: 0; margin-bottom: 20px; }
+            .logo h2 { font-size: 22px; }
         }
     </style>
 </head>
@@ -205,15 +125,15 @@
                     </ul>
                 </div>
                 <div class="dropdown d-inline-block ms-3">
-                    <button class="btn btn-link dropdown-toggle text-white text-decoration-none" data-bs-toggle="dropdown" id="accountDropdown">
+                    <button class="btn btn-link dropdown-toggle text-white text-decoration-none" data-bs-toggle="dropdown">
                         <i class="fas fa-user"></i> Account
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="fas fa-sign-in-alt"></i> Sign In</a></li>
-                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#registerModal"><i class="fas fa-user-plus"></i> Register</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Sign In</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Register</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="wishlist.php"><i class="fas fa-heart"></i> Your Wishlist</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-box"></i> Your Orders</a></li>
+                        <li><a class="dropdown-item" href="wishlist.php">Your Wishlist</a></li>
+                        <li><a class="dropdown-item" href="#">Your Orders</a></li>
                     </ul>
                 </div>
             </div>
@@ -232,7 +152,7 @@
             <div class="col-md-6">
                 <form class="search-form" action="shop.php" method="GET">
                     <div class="input-group">
-                        <input type="text" name="search" class="form-control" placeholder="Search products...">
+                        <input type="text" name="search" class="form-control" placeholder="Search for dashiki, kente, ankara...">
                         <button class="btn" type="submit"><i class="fas fa-search"></i> Search</button>
                     </div>
                 </form>
@@ -259,12 +179,11 @@
             <a class="nav-link" href="shop.php">Today's Deals</a>
             <a class="nav-link" href="shop.php">New Arrivals</a>
             <a class="nav-link" href="sale.php">Sale</a>
-            <a class="nav-link" href="#">Customer Service</a>
+            <a class="nav-link" href="customer-service.php">Customer Service</a>
         </div>
     </div>
 </nav>
 
-<!-- Login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -292,7 +211,6 @@
     </div>
 </div>
 
-<!-- Register Modal -->
 <div class="modal fade" id="registerModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -326,7 +244,6 @@
 </div>
 
 <script>
-// Account Modal JavaScript
 document.getElementById('loginForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
     alert('Demo: Login functionality would connect to database');
@@ -337,35 +254,5 @@ document.getElementById('registerForm')?.addEventListener('submit', function(e) 
     e.preventDefault();
     alert('Demo: Registration functionality would connect to database');
     bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
-});
-</script>
-<script>
-$(document).ready(function() {
-    $('.add-to-cart').click(function(e) {
-        e.preventDefault();
-        var $btn = $(this);
-        var productId = $btn.data('id');
-        
-        $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
-        $.ajax({
-            url: 'includes/cart.php',
-            method: 'POST',
-            data: { action: 'add', product_id: productId, quantity: 1 },
-            success: function(res) {
-                var data = JSON.parse(res);
-                if(data.success) {
-                    $('#cart-count').text(data.cart_count);
-                    alert('Added to cart!');
-                } else {
-                    alert(data.message || 'Error adding to cart');
-                }
-                $btn.html('<i class="fas fa-cart-plus"></i> Add to Cart').prop('disabled', false);
-            },
-            error: function() {
-                alert('Error adding to cart');
-                $btn.html('<i class="fas fa-cart-plus"></i> Add to Cart').prop('disabled', false);
-            }
-        });
-    });
 });
 </script>

@@ -16,7 +16,6 @@ $grandTotal = $total + $shipping;
     <title>Checkout - <?php echo SITE_NAME; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: #f5f5f5; }
         .checkout-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
@@ -25,9 +24,8 @@ $grandTotal = $total + $shipping;
         .payment-method { border: 2px solid #eee; border-radius: 8px; padding: 15px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s; }
         .payment-method:hover { border-color: #FF9900; background: #fff8f0; }
         .payment-method.selected { border-color: #FF9900; background: #fff8f0; }
-        .payment-method input { margin-right: 10px; }
         .btn-checkout { background: #FF9900; border: none; padding: 15px; font-weight: 600; font-size: 18px; color: #111; width: 100%; border-radius: 8px; }
-        .btn-checkout:hover { background: #ff8c00; color: #111; }
+        .btn-checkout:hover { background: #ff8c00; }
         @media (max-width: 768px) { .order-summary { position: relative; top: 0; margin-top: 20px; } }
     </style>
 </head>
@@ -99,10 +97,7 @@ $grandTotal = $total + $shipping;
                             <label for="card"><i class="fab fa-cc-visa fa-2x me-2"></i> <i class="fab fa-cc-mastercard fa-2x"></i> Credit / Debit Card</label>
                             <div id="cardDetails" style="display: none; margin-top: 10px;">
                                 <input type="text" class="form-control mb-2" placeholder="Card Number">
-                                <div class="row">
-                                    <div class="col-6"><input type="text" class="form-control" placeholder="MM/YY"></div>
-                                    <div class="col-6"><input type="text" class="form-control" placeholder="CVV"></div>
-                                </div>
+                                <div class="row"><div class="col-6"><input type="text" class="form-control" placeholder="MM/YY"></div><div class="col-6"><input type="text" class="form-control" placeholder="CVV"></div></div>
                             </div>
                         </div>
                         <div class="payment-method" data-method="airtel">
@@ -141,72 +136,56 @@ $grandTotal = $total + $shipping;
                     <strong>Total:</strong>
                     <strong class="h4 text-primary"><?php echo formatPrice($grandTotal); ?></strong>
                 </div>
-                
-                <div class="alert alert-info small">
-                    <i class="fas fa-shield-alt"></i> Secure payment processing. Your information is safe with us.
-                </div>
+                <div class="alert alert-info small"><i class="fas fa-shield-alt"></i> Secure payment processing. Your information is safe with us.</div>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-$(document).ready(function() {
-    // Payment method selection styling
-    $('.payment-method').click(function() {
-        $('.payment-method').removeClass('selected');
-        $(this).addClass('selected');
-        $(this).find('input[type="radio"]').prop('checked', true);
-        
-        // Show/hide details
-        $('#mpesaDetails, #cardDetails').hide();
-        if($(this).data('method') === 'mpesa') {
-            $('#mpesaDetails').show();
-        } else if($(this).data('method') === 'card') {
-            $('#cardDetails').show();
-        }
+document.querySelectorAll('.payment-method').forEach(method => {
+    method.addEventListener('click', function() {
+        document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+        this.classList.add('selected');
+        this.querySelector('input[type="radio"]').checked = true;
+        document.getElementById('mpesaDetails')?.setAttribute('style', 'display: none');
+        document.getElementById('cardDetails')?.setAttribute('style', 'display: none');
+        if(this.dataset.method === 'mpesa') document.getElementById('mpesaDetails').style.display = 'block';
+        if(this.dataset.method === 'card') document.getElementById('cardDetails').style.display = 'block';
     });
+});
+
+document.getElementById('checkoutForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    submitBtn.disabled = true;
     
-    // Form submission
-    $('#checkoutForm').submit(function(e) {
-        e.preventDefault();
-        
-        // Show loading state
-        const $btn = $(this).find('button[type="submit"]');
-        const originalText = $btn.html();
-        $btn.html('<i class="fas fa-spinner fa-spin"></i> Processing...').prop('disabled', true);
-        
-        // Collect form data
-        const formData = {
-            name: $('input[name="name"]').val(),
-            email: $('input[name="email"]').val(),
-            phone: $('input[name="phone"]').val(),
-            address: $('textarea[name="address"]').val(),
-            city: $('input[name="city"]').val(),
-            country: $('select[name="country"]').val(),
-            payment_method: $('input[name="payment_method"]:checked').val()
-        };
-        
-        // Validate
-        if(!formData.name || !formData.email || !formData.phone || !formData.address) {
-            alert('Please fill all required fields');
-            $btn.html(originalText).prop('disabled', false);
-            return;
-        }
-        
-        // Simulate order processing (in production, send to server)
-        setTimeout(function() {
-            // Generate random order number
-            const orderNumber = 'AFR-' + new Date().getTime() + '-' + Math.floor(Math.random() * 1000);
-            
-            // Show success message
-            alert('Order placed successfully!\nOrder Number: ' + orderNumber + '\n\nThank you for shopping with AfriMart!');
-            
-            // Redirect to home
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((value, key) => { data[key] = value; });
+    
+    fetch('process-order.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data).toString()
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            alert('Order placed successfully!\nOrder Number: ' + data.order_number);
             window.location.href = 'index.php';
-        }, 1500);
+        } else {
+            alert('Error: ' + data.message);
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        alert('An error occurred. Please try again.');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
     });
 });
 </script>

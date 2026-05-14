@@ -8,7 +8,7 @@ $price = convertPrice($product['price_usd'], $currentCurrency);
 $compare = $product['compare_price_usd'] ? convertPrice($product['compare_price_usd'], $currentCurrency) : null;
 $sizes = $product['sizes'] ? explode(',', $product['sizes']) : [];
 $colors = $product['colors'] ? explode(',', $product['colors']) : [];
-$img = $product['images_array'][0];
+$img = isset($product['images_array'][0]) ? $product['images_array'][0] : 'placeholder.jpg';
 $discount = $compare ? round((($product['compare_price_usd'] - $product['price_usd']) / $product['compare_price_usd']) * 100) : 0;
 ?>
 <!DOCTYPE html>
@@ -19,6 +19,7 @@ $discount = $compare ? round((($product['compare_price_usd'] - $product['price_u
     <title><?php echo $product['name']; ?> - <?php echo SITE_NAME; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: #f5f5f5; }
         .product-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
@@ -66,7 +67,6 @@ $discount = $compare ? round((($product['compare_price_usd'] - $product['price_u
                         <span class="badge bg-danger ms-2">-<?php echo $discount; ?>%</span>
                     <?php endif; ?>
                 </div>
-                
                 <div class="mb-3">
                     <span class="text-muted">Availability:</span>
                     <?php if($product['stock_quantity'] > 0): ?>
@@ -75,7 +75,6 @@ $discount = $compare ? round((($product['compare_price_usd'] - $product['price_u
                         <span class="text-danger">Out of Stock</span>
                     <?php endif; ?>
                 </div>
-                
                 <div class="mb-4">
                     <p><?php echo nl2br(htmlspecialchars($product['description'])); ?></p>
                 </div>
@@ -124,56 +123,36 @@ $discount = $compare ? round((($product['compare_price_usd'] - $product['price_u
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function() {
-    $('.size-btn').click(function() {
-        $('.size-btn').removeClass('active btn-primary').addClass('btn-outline-secondary');
-        $(this).removeClass('btn-outline-secondary').addClass('active btn-primary');
-    });
-    
-    $('.color-btn').click(function() {
-        $('.color-btn').removeClass('active border-primary');
-        $(this).addClass('active border-primary');
-    });
-    
-    $('.quantity-plus').click(function() {
-        var input = $('#qty');
-        input.val(parseInt(input.val()) + 1);
-    });
-    
-    $('.quantity-minus').click(function() {
-        var input = $('#qty');
-        if(parseInt(input.val()) > 1) input.val(parseInt(input.val()) - 1);
-    });
-    
-    $('.add-to-cart').click(function() {
-        var $btn = $(this);
-        var productId = $btn.data('id');
-        var quantity = $('#qty').val();
-        var size = $('.size-btn.active').data('size');
-        var color = $('.color-btn.active').data('color');
-        
-        $btn.html('<i class="fas fa-spinner fa-spin"></i> Adding...').prop('disabled', true);
-        $.ajax({
-            url: 'includes/cart.php',
-            method: 'POST',
-            data: { action: 'add', product_id: productId, quantity: quantity, size: size, color: color },
-            success: function(res) {
-                var data = JSON.parse(res);
-                if(data.success) {
-                    $('#cart-count').text(data.cart_count);
-                    alert('Added to cart!');
-                } else {
-                    alert(data.message);
-                }
-                $btn.html('<i class="fas fa-cart-plus"></i> Add to Cart').prop('disabled', false);
-            },
-            error: function() {
-                alert('Error adding to cart');
-                $btn.html('<i class="fas fa-cart-plus"></i> Add to Cart').prop('disabled', false);
-            }
+document.addEventListener('DOMContentLoaded', function() {
+    const sizeBtns = document.querySelectorAll('.size-btn');
+    sizeBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            sizeBtns.forEach(b => {
+                b.classList.remove('active', 'btn-primary');
+                b.classList.add('btn-outline-secondary');
+            });
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('active', 'btn-primary');
         });
+    });
+    
+    const colorBtns = document.querySelectorAll('.color-btn');
+    colorBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            colorBtns.forEach(b => b.classList.remove('active', 'border-primary'));
+            this.classList.add('active', 'border-primary');
+        });
+    });
+    
+    document.querySelector('.quantity-plus')?.addEventListener('click', () => {
+        const input = document.getElementById('qty');
+        input.value = parseInt(input.value) + 1;
+    });
+    
+    document.querySelector('.quantity-minus')?.addEventListener('click', () => {
+        const input = document.getElementById('qty');
+        if(parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;
     });
 });
 </script>

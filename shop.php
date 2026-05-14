@@ -18,50 +18,17 @@ $products = getProducts($pdo, null, $category, $search, $sort);
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f5f5f5; }
-        .product-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: 0.2s;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            height: 100%;
-        }
-        .product-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .product-image {
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f8f9fa;
-            padding: 15px;
-        }
-        .product-image img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
+        .product-card { background: white; border-radius: 8px; overflow: hidden; transition: 0.2s; margin-bottom: 20px; border: 1px solid #ddd; height: 100%; position: relative; }
+        .product-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .product-image { height: 200px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; padding: 15px; }
+        .product-image img { max-width: 100%; max-height: 100%; object-fit: contain; }
         .product-info { padding: 12px; border-top: 1px solid #eee; }
         .product-title { font-size: 14px; font-weight: 500; height: 40px; overflow: hidden; }
         .product-title a { color: #007185; text-decoration: none; }
         .product-price { font-size: 18px; font-weight: 700; color: #B12704; }
-        .filter-sidebar {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            position: sticky;
-            top: 20px;
-        }
-        .filter-sidebar h5 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        @media (max-width: 768px) {
-            .filter-sidebar { position: relative; top: 0; margin-bottom: 20px; }
-        }
+        .filter-sidebar { background: white; border-radius: 8px; padding: 20px; position: sticky; top: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .filter-sidebar h5 { font-size: 16px; font-weight: 700; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        @media (max-width: 768px) { .filter-sidebar { position: relative; top: 0; margin-bottom: 20px; } }
     </style>
 </head>
 <body>
@@ -70,7 +37,6 @@ $products = getProducts($pdo, null, $category, $search, $sort);
 
 <div class="container my-4">
     <div class="row">
-        <!-- Filter Sidebar -->
         <div class="col-md-3">
             <div class="filter-sidebar">
                 <h5><i class="fas fa-filter"></i> Filter & Sort</h5>
@@ -93,17 +59,13 @@ $products = getProducts($pdo, null, $category, $search, $sort);
             </div>
         </div>
         
-        <!-- Products Grid -->
         <div class="col-md-9">
             <h1 class="mb-4"><?php echo $search ? "Search: $search" : ($category ? ucfirst(str_replace('-',' ',$category)) : 'All Products'); ?></h1>
             <div class="row">
                 <?php if(empty($products)): ?>
                 <div class="col-12"><div class="alert alert-info text-center py-5">No products found. <a href="shop.php">View all products</a></div></div>
                 <?php else: ?>
-                <?php foreach($products as $p): 
-                    $price = convertPrice($p['price_usd'], $currentCurrency); 
-                    $img = isset($p['images_array'][0]) ? $p['images_array'][0] : 'placeholder.jpg';
-                ?>
+                <?php foreach($products as $p): $price = convertPrice($p['price_usd'], $currentCurrency); $img = isset($p['images_array'][0]) ? $p['images_array'][0] : 'placeholder.jpg'; ?>
                 <div class="col-md-4 col-6 mb-4">
                     <div class="product-card">
                         <div class="product-image">
@@ -125,35 +87,11 @@ $products = getProducts($pdo, null, $category, $search, $sort);
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 document.getElementById('sort-by')?.addEventListener('change', function() {
-    window.location.href = 'shop.php?sort=' + this.value;
-});
-
-$('.add-to-cart').click(function() {
-    var $btn = $(this);
-    var productId = $btn.data('id');
-    $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
-    $.ajax({
-        url: 'includes/cart.php',
-        method: 'POST',
-        data: { action: 'add', product_id: productId, quantity: 1 },
-        success: function(res) {
-            var data = JSON.parse(res);
-            if(data.success) {
-                $('#cart-count').text(data.cart_count);
-                alert('Added to cart!');
-            } else {
-                alert(data.message || 'Error');
-            }
-            $btn.html('<i class="fas fa-cart-plus"></i> Add to Cart').prop('disabled', false);
-        },
-        error: function() {
-            alert('Error');
-            $btn.html('<i class="fas fa-cart-plus"></i> Add to Cart').prop('disabled', false);
-        }
-    });
+    const url = new URL(window.location.href);
+    url.searchParams.set('sort', this.value);
+    window.location.href = url.toString();
 });
 </script>
 

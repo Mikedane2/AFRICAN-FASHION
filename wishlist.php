@@ -64,41 +64,6 @@ $items = getWishlist($pdo, $sessionId);
     <?php endif; ?>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function() {
-    $('.add-to-cart').click(function() {
-        var $btn = $(this);
-        var productId = $btn.data('id');
-        $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
-        $.ajax({
-            url: 'includes/cart.php',
-            method: 'POST',
-            data: { action: 'add', product_id: productId, quantity: 1 },
-            success: function(res) {
-                var data = JSON.parse(res);
-                if(data.success) {
-                    $('#cart-count').text(data.cart_count);
-                    alert('Added to cart!');
-                }
-                $btn.html('<i class="fas fa-cart-plus"></i> Add to Cart').prop('disabled', false);
-            }
-        });
-    });
-    
-    $('.remove-wishlist').click(function() {
-        if(confirm('Remove from wishlist?')) {
-            $.ajax({
-                url: 'wishlist-ajax.php',
-                method: 'POST',
-                data: { product_id: $(this).data('id') },
-                success: function() { location.reload(); }
-            });
-        }
-    });
-});
-</script>
-
 <?php include 'includes/footer.php'; ?>
 </body>
 </html>
